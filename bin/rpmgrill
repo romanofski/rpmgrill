@@ -176,6 +176,12 @@ sub main {
     # and there's no clean way to make it use @_.
     handle_opts();                      # will set package globals
 
+    my %Exit_Codes = (
+        "PASS" => 0,
+        "TESTFAIL" => 1
+        );
+    my $exit_code = $Exit_Codes{PASS};
+
     # Fetch command-line arguments.  Barf if too many.
     my $base_dir = shift(@ARGV)
         or die "$ME: missing BASEDIR argument; try $ME --help\n";
@@ -226,6 +232,13 @@ sub main {
         rename $tmpfile => $outfile
             or die "$ME: Cannot rename $tmpfile: $!\n";
     }
+
+    # In case rpmgrill found any problems, set the exit code to fail
+    if (keys %{ $grill->{gripes} }) {
+        $exit_code = $Exit_Codes{TESTFAIL};
+    }
+
+    exit $exit_code;
 }
 
 

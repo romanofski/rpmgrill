@@ -72,7 +72,7 @@ subtest 'Koji Client returns instance of Koji Build holding build info' => sub {
 subtest 'Koji Client downloads successfully' => sub {
     my $tempdir = tempdir("t-FetchBuild.XXXXXX", CLEANUP => !$ENV{DEBUG});
     my $rpm_nvr = 'testbuild-0.1-1.fc20';
-    my $rpm_name = "$rpm_nvr.noarch.rpm";
+    my $rpm_name = "$rpm_nvr.x86_64.rpm";
 
     #
     # Create the directory structure from brew in our temporary
@@ -80,9 +80,9 @@ subtest 'Koji Client downloads successfully' => sub {
     # simulate a download.
     #
     my $tempdir_path = Cwd::abs_path($tempdir);
-    my @created = mkpath(File::Spec->catfile($tempdir_path, 'packages/testbuild/0.1/1.fc20/noarch/'));
+    my @created = mkpath(File::Spec->catfile($tempdir_path, 'packages/testbuild/0.1/1.fc20/x86_64/'));
     my $rpm_testfile = File::Spec->catfile(pop @created, $rpm_name);
-    my $copy_from = File::Spec->catfile(dirname(__FILE__), 'data', $rpm_name);
+    my $copy_from = File::Spec->catfile(dirname(__FILE__), 'data', 'noerror', $rpm_name);
     copy($copy_from, $rpm_testfile);
 
     #
@@ -108,7 +108,7 @@ subtest 'Koji Client downloads successfully' => sub {
             version => '0.1',
             nvr => $rpm_nvr,
             release => '1.fc20',
-            arch => 'noarch',
+            arch => 'x86_64',
             id => '3740308',
             name => 'testbuild',
         },
@@ -169,9 +169,9 @@ subtest 'extracts downloaded RPM successfully' => sub {
     # downloaded.
     #
     my $tempdir = tempdir("t-FetchBuild.XXXXXX", CLEANUP => !$ENV{DEBUG});
-    my $rpm_name = 'testbuild-0.1-1.fc20.noarch.rpm';
+    my $rpm_name = 'testbuild-0.1-1.fc20.x86_64.rpm';
     my $rpm_testfile = File::Spec->catfile($tempdir, $rpm_name);
-    copy( File::Spec->catfile(dirname(__FILE__), 'data', $rpm_name), $rpm_testfile );
+    copy( File::Spec->catfile(dirname(__FILE__), 'data', 'noerror', $rpm_name), $rpm_testfile );
 
     #
     # Redirect the print statements. The function was successful, if it
@@ -183,7 +183,7 @@ subtest 'extracts downloaded RPM successfully' => sub {
         or die "Can't open STDOUT: $!";
 
     RPM::Grill::FetchBuild::extract_rpm (
-        {'nvr' => 'testbuild-0.1-1.fc20', 'arch' => 'noarch'},
+        {'nvr' => 'testbuild-0.1-1.fc20', 'arch' => 'x86_64'},
         $tempdir,
         1
     );
